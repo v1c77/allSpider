@@ -8,12 +8,29 @@ import time
 
 keyword = '赵日天'
 
-baidu = 'http://www.baidu.com/s?wd=%s&pn=' % keyword
+pn = 0
+baidu = 'http://www.baidu.com/s?wd=%s&pn=' % keyword + str(pn)
 
+headers = {
 
+    'method': 'GET',
+
+    'user-agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/535.11 (KHTML, like Gecko) Chrome/27.0.1453.93 Safari/537.36'
+}
 def getUrlTime(url):
-    r = requests.get(url)
-    return r.headers['last-modified']
+
+    # trueUrl = requests.get(url)
+    # print trueUrl.url
+
+    # print url
+    r = requests.get(url, headers=headers)
+    # print r.headers
+    #通过捕获错误判断时间
+    try:
+
+        return r.headers['Last-Modified']
+    except KeyError:
+        return r.headers['date']
 
 class baiduSpider(object):
     "找呀找呀找朋友。。。"
@@ -52,7 +69,6 @@ class baiduSpider(object):
 if __name__ == "__main__":
     # data['q'] = raw_input('Enter what you want:')
     spider = baiduSpider()
-    pn = 0
     print("[!] Start run Spider...")
     text = spider.GetSource() # Get Sources
     Pages = spider.GetPages(text) # To calculate Pages
@@ -63,10 +79,20 @@ if __name__ == "__main__":
         p += 1
         text = spider.GetSource()
         for i in spider.GetUrl(text):
-            f.writelines(i + '\n')
-            print i
-            urltime = getUrlTime(i)
+            trueUrl = requests.get(i).url
+            print trueUrl
+            # 判断是否为动态网页
+            # if trueUrl.find('?') >= 0:     #如果是动态网址则跳出本次循环
+            #     print 'not allow dynamic address'
+            #     continue
+
+            f.writelines(trueUrl + '\n')
+
+            urltime = getUrlTime(trueUrl)
             print urltime
+
         pn = pn + 10
+        baidu = 'http://www.baidu.com/s?wd=%s&pn=' % keyword + str(pn)
+
     #     time.sleep(2) # To prevent Google verification code, dormancy for 30 seconds
     # f.close()

@@ -18,10 +18,10 @@ baidu = 'http://news.baidu.com/ns?word=%s&pn=' % keyword + str(pn)
 headers = {
 
     'Host': 'news.baidu.com',
-
-    'User-Agent': ''
-
-    'user-agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/535.11 (KHTML, like Gecko) Chrome/27.0.1453.93 Safari/537.36'
+    'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64; rv:41.0) Gecko/20100101 Firefox/41.0',
+    'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+    'Accept-Language': 'zh-CN,zh;q=0.8,en-US;q=0.5,en;q=0.3',
+    'Accept-Encoding': 'gzip, deflate'
 }
 def getUrlTime(url):
 
@@ -29,7 +29,7 @@ def getUrlTime(url):
     # print trueUrl.url
 
     # print url
-    r = requests.get(url, headers=headers)
+    r = requests.get(url)
     # print r.headers
     #通过捕获错误判断时间
     try:
@@ -41,7 +41,7 @@ def getUrlTime(url):
 class baiduNewsSpider(object):
     "找呀找呀找朋友。。。"
     def GetSource(self):
-        source = requests.get(baidu)
+        source = requests.get(baidu,headers=headers)
         if source.status_code == 503: # Why did this happen?
             print("[!] An error occurred! Please check whether any verification code")
             os._exit(0)
@@ -74,12 +74,16 @@ class baiduNewsSpider(object):
     def GetUrlStrTime(self, obj):
 
         objitem = {}
-        Url = obj.xpath('h3[@class="c-title"]/a/@href')
-        Str = obj.xpath('h3[@class="c-title"]/a/text()')
-        Time = obj.xpath('p[@class="c-author"]/text()')
+        Url = obj.xpath('h3[@class="c-title"]/a/@href')[0]
+        Str = obj.xpath('h3[@class="c-title"]/a//text()')
+        Time = obj.xpath('.//p[@class="c-author"]/text()')[0]
+        # 字符串的合并处理
+        a = ''
+        strAll = a.join(Str)
+
 
         objitem['Url'] = Url
-        objitem['Str'] = Str
+        objitem['Str'] = strAll
         objitem['Time'] = Time
 
         return objitem
@@ -99,9 +103,11 @@ if __name__ == "__main__":
         p += 1
         text = spider.GetSource() #获取百度搜索页面数据
         objOfPages = spider.getBox(text)
-        print 'ok'
-        testobj = spider.GetUrlStrTime(objOfPages[0])
-        print testobj
+        print '[+] Geting source...'
+
+        for each in objOfPages:
+            testobj = spider.GetUrlStrTime(objOfPages[0])
+            print testobj
         #多线程分析
 
 

@@ -106,7 +106,7 @@ if __name__ == "__main__":
         print '[+] Geting source...'
 
         for each in objOfPages:
-            testobj = spider.GetUrlStrTime(objOfPages[0])
+            testobj = spider.GetUrlStrTime(each)
             print testobj
         #多线程分析
 

@@ -4,6 +4,7 @@ from lxml import etree
 import re
 import requests
 import os
+import IOmymongo
 
 from multiprocessing.dummy import Pool as ThreadPool
 
@@ -31,8 +32,6 @@ def towritetxt(contentdict):
     f.writelines(u'发帖人：' + str(contentdict['user_name']) + '\n\n')
 
 
-def towritedb():
-    "数据库存储    使用mongodb"
 def getUrlTime(url):
 
     # trueUrl = requests.get(url)
@@ -103,6 +102,7 @@ class baiduNewsSpider(object):
 if __name__ == "__main__":
     # data['q'] = raw_input('Enter what you want:')
     spider = baiduNewsSpider()
+    mongocont = IOmymongo.conToMogd()
     print("[!] Start run Spider...")
     # bnContion = pymongo.Connection
     # text = spider.GetSource() # Get Sources
@@ -119,6 +119,7 @@ if __name__ == "__main__":
         for each in objOfPages:
             testobj = spider.GetUrlStrTime(each)
             print testobj
+            IOmymongo.writeToMongo(mongocont,testobj)
 
         #多线程分析
 

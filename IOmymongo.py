@@ -24,4 +24,4 @@ def writeToMongo(mgcont,item):
     db = mgcont.protestdb
     collection = db.protestcol
     post_id = collection.insert(item)
-    print "ObjectId:" + post_id   #感觉可以不写
+    print post_id   #感觉可以不写

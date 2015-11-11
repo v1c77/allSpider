@@ -4,8 +4,9 @@ from lxml import etree
 import re
 import requests
 import os
-import time
+
 from multiprocessing.dummy import Pool as ThreadPool
+
 
 keyword = '五中全会'
 pn = 0
@@ -23,6 +24,15 @@ headers = {
     'Accept-Language': 'zh-CN,zh;q=0.8,en-US;q=0.5,en;q=0.3',
     'Accept-Encoding': 'gzip, deflate'
 }
+def towritetxt(contentdict):
+    "文本存储"
+    f.writelines(u'发表时间：' + str(contentdict['topic_time']) + '\n')
+    f.writelines(u'内容：' + str(contentdict['topic_content']) + '\n')
+    f.writelines(u'发帖人：' + str(contentdict['user_name']) + '\n\n')
+
+
+def towritedb():
+    "数据库存储    使用mongodb"
 def getUrlTime(url):
 
     # trueUrl = requests.get(url)
@@ -94,6 +104,7 @@ if __name__ == "__main__":
     # data['q'] = raw_input('Enter what you want:')
     spider = baiduNewsSpider()
     print("[!] Start run Spider...")
+    # bnContion = pymongo.Connection
     # text = spider.GetSource() # Get Sources
     Pages = spider.GetPages(spider.GetSource()) # To calculate Pages
     f = open('result.txt', 'a')
@@ -108,6 +119,7 @@ if __name__ == "__main__":
         for each in objOfPages:
             testobj = spider.GetUrlStrTime(each)
             print testobj
+
         #多线程分析
 
 

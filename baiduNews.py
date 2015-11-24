@@ -5,6 +5,7 @@ import re
 import requests
 import os
 import IOmymongo
+import autoTime
 
 from multiprocessing.dummy import Pool as ThreadPool
 
@@ -90,10 +91,16 @@ class baiduNewsSpider(object):
         a = ''
         strAll = a.join(Str)
 
+        #时间的精细化处理
+        source = Time.split()[0]
+        Time = Time.split()[1:]
+        Timeend = a.join(Time)
+        # Time = autoTime.strToTime(Time)
 
         objitem['Url'] = Url
         objitem['Str'] = strAll
-        objitem['Time'] = Time
+        objitem['Time'] = Timeend
+        objitem['Source'] = source
 
         return objitem
 
@@ -103,7 +110,7 @@ if __name__ == "__main__":
     # data['q'] = raw_input('Enter what you want:')
     spider = baiduNewsSpider()
     mongocont = IOmymongo.conToMogd()
-    print("[!] Start run Spider...")
+    print("[!] Start run  BaiduNewsSpider...")
     # bnContion = pymongo.Connection
     # text = spider.GetSource() # Get Sources
     Pages = spider.GetPages(spider.GetSource()) # To calculate Pages
@@ -119,6 +126,8 @@ if __name__ == "__main__":
         for each in objOfPages:
             testobj = spider.GetUrlStrTime(each)
             print testobj
+            "测试时间"
+            print testobj['Time']
             IOmymongo.writeToMongo(mongocont,testobj)
 
         #多线程分析

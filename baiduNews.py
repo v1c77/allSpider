@@ -15,7 +15,9 @@ pn = 0
 # 新闻/全部
 
 # baidu = 'http://www.baidu.com/s?wd=%s&pn=' % keyword + str(pn)
-baidu = 'http://news.baidu.com/ns?word=%s&pn=' % keyword + str(pn)
+baidu = 'http://news.baidu.com/ns?word=%s&rn=50&pn=' % keyword + str(pn)
+
+
 
 
 headers = {
@@ -94,8 +96,8 @@ class baiduNewsSpider(object):
         #时间的精细化处理
         source = Time.split()[0]
         Time = Time.split()[1:]
-        Timeend = a.join(Time)
-        # Time = autoTime.strToTime(Time)
+        Time = a.join(Time)
+        Timeend = autoTime.strToTime(Time)
 
         objitem['Url'] = Url
         objitem['Str'] = strAll
@@ -125,9 +127,8 @@ if __name__ == "__main__":
 
         for each in objOfPages:
             testobj = spider.GetUrlStrTime(each)
-            print testobj
-            "测试时间"
-            print testobj['Time']
+            "输出数据"
+            print '*url:',testobj['Url'],',','Title:',testobj['Str'],',','Time:',testobj['Time']
             IOmymongo.writeToMongo(mongocont,testobj)
 
         #多线程分析
@@ -136,6 +137,6 @@ if __name__ == "__main__":
         pn = pn + 10
         # 新闻/全部
         # baidu = 'http://www.baidu.com/s?wd=%s&pn=' % keyword + str(pn)
-        baidu = 'http://news.baidu.com/ns?word=%s&pn=' % keyword + str(pn)
+        baidu = 'http://news.baidu.com/ns?word=%s&rn=50&pn=' % keyword + str(pn)
     #     time.sleep(2) # To prevent Google verification code, dormancy for 30 seconds
     # f.close()

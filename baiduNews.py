@@ -8,36 +8,35 @@ import IOmymongo
 import autoTime
 import datetime
 import time
+from math import ceil
 
 from multiprocessing.dummy import Pool as ThreadPool
 
-keyword = '五中全会'
+keyword = '习近平@'
 pn = 0
 # 新闻/全部
-baidu = 'http://news.baidu.com/ns?cl=2&word=%s&pn=' % keyword + str(pn)
+baidunews = 'http://news.baidu.com/ns?cl=2&word=%s&pn=' % keyword + str(pn)
 
-# baidu = 'http://www.baidu.com/s?wd=%s&pn=' % keyword + str(pn)
-# baidu = 'http://news.baidu.com/ns?word=%s&pn=' % keyword + str(pn)
+# baidunews = 'http://www.baidu.com/s?wd=%s&pn=' % keyword + str(pn)
+# baidunews = 'http://news.baidu.com/ns?word=%s&pn=' % keyword + str(pn)
 
 # 精细化时间
-starttime = datetime.datetime(2015, 11, 1)     #起始查询时间
-deartetime = datetime.timedelta(seconds=58, minutes=59, hours=23)
+starttime = datetime.datetime(2015, 12, 17)     #起始查询时间
 oneday = datetime.timedelta(days=1)
 stoptime = int(time.mktime(datetime.datetime.now().timetuple()))    #截止时间
-endtime = starttime + deartetime
 str_start_time = int(time.mktime(starttime.timetuple()))
-str_end_time = str_start_time + 86399
+str_end_time = str_start_time + 1798     #一天分成48份
 
 gpc = '&gpc=stf%3D' + str(str_start_time) + '%2C' + str(str_end_time) + '%7Cstftype%3D2'
 
-baidu = baidu + gpc
+baidunews = baidunews + gpc
 #      &gpc=stf%3D1446307200%2C1448899200%7Cstftype%3D2
 
 
 
 # stf = 'stf=' + str(str_start_time) + ',' + str(str_end_time) + '|stftype=2'  # 时间戳
 
-# dates = {
+# dates = {       # 传参搜索
 #     'ie': 'utf-8',
 #     # 'f':'8', ##no
 #     # 'rsv_bp':'1',  #no
@@ -89,7 +88,7 @@ class baiduNewsSpider(object):
     "找呀找呀找朋友。。。"
 
     def GetSource(self):
-        source = requests.get(baidu, headers=headers)
+        source = requests.get(baidunews, headers=headers)
         if source.status_code == 503:  # Why did this happen?
             print("[!] An error occurred! Please check whether any verification code")
             os._exit(0)
@@ -109,9 +108,9 @@ class baiduNewsSpider(object):
         print numstr
         number = filter(str.isalnum, numstr.encode("utf-8"))
         s = float(number)
-        Num = int(round(s / 10))  # Calculation about pages
+        Num = int(ceil(s / 10)) + 1  # Calculation about pages
         print("[+] Results there are %s pages, there are about %s results" % (Num, number))
-        Pages = Num * 10 - 10  # Calculation about page number
+        Pages = Num * 10 -10  # Calculation about page number
         return Pages
 
     def getBox(self, entire):
@@ -153,12 +152,12 @@ if __name__ == "__main__":
     # text = spider.GetSource() # Get Sources
     while str_end_time < stoptime:
         print '[+]Start a part spdider'
-        Pages = spider.GetPages(spider.GetSource())  # To calculate Pages
         p = 1
         pn = 0
-        baidu = 'http://news.baidu.com/ns?cl=2&word=%s&pn=' % keyword + str(pn) + '&gpc=stf%3D' + str(str_start_time) + '%2C' + str(str_end_time) + '%7Cstftype%3D2'
+        baidunews = 'http://news.baidu.com/ns?cl=2&word=%s&pn=' % keyword + str(pn) + '&gpc=stf%3D' + str(str_start_time) + '%2C' + str(str_end_time) + '%7Cstftype%3D2'
+        Pages = spider.GetPages(spider.GetSource())  # To calculate Pages
         while pn <= Pages:
-            print("[+] Start scraping content... The %d page" % p)
+            print("[+] Start scraping content... The %d/%d page" % (p,Pages/10+1                 ))
             p += 1
             text = spider.GetSource()  # 获取百度搜索页面数据
             objOfPages = spider.getBox(text)
@@ -175,12 +174,12 @@ if __name__ == "__main__":
             # 重新加载数据项
             pn = pn + 10
 
-            baidu = 'http://news.baidu.com/ns?cl=2&word=%s&pn=' % keyword + str(pn) + '&gpc=stf%3D' + str(str_start_time) + '%2C' + str(str_end_time) + '%7Cstftype%3D2'
+            baidunews = 'http://news.baidu.com/ns?cl=2&word=%s&pn=' % keyword + str(pn) + '&gpc=stf%3D' + str(str_start_time) + '%2C' + str(str_end_time) + '%7Cstftype%3D2'
 
 
         #修改精细时间
-        str_start_time = str_start_time + 86400
-        str_end_time = str_start_time + 86399
+        str_start_time = str_start_time + 1800
+        str_end_time = str_start_time + 1798
 
         # 新闻/全部
 

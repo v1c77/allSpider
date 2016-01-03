@@ -6,7 +6,7 @@ import requests
 import os
 import time
 
-keyword = '赵日天'
+keyword = '爱因斯坦'
 
 pn = 0
 baidu = 'http://www.baidu.com/s?wd=%s&pn=' % keyword + str(pn)

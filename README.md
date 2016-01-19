@@ -5,6 +5,10 @@
 
 
 ###需要添加界面的脚本: baiduNews.py
+
+暂时设置的界面..:
+![uimaybe](https://github.com/woailuoli993/allSpider/blob/master/uimaybe.png)
+
 依赖文件:
  - autotime.py
  - IOmongo,py

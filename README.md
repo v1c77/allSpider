@@ -1,6 +1,6 @@
 # allSpider
 爬虫集合
-
+[google部分移植到scrapy](https://github.com/woailuoli993/googleSpider)
 
 
 
